@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Routing\Redirector;
 use Vedmant\FeedReader\Facades\FeedReader;
 use SimplePie as SimplePieAlias;
 
@@ -58,10 +63,10 @@ class Controller extends BaseController
         return $result;
     }
 
-    private function filterPostsByTitle($title){
+    private function filterPostsByTitle($title): array
+    {
         $posts = $this->getPosts()['items'];
         $titleSplit = join('' , preg_split('/[^\w+]/' , $title));
-
         $post = [];
         foreach ($posts as $cur){
             $currentTitle = strtolower(join('' , preg_split('/[^\w+]/' , $cur['title'])));
@@ -73,7 +78,8 @@ class Controller extends BaseController
     }
 
 
-    public function index (){
+    public function index (): Factory|View|Application
+    {
         $posts = $this->getPosts();
         return view('welcome' , [
             'posts' => $posts,
@@ -81,7 +87,8 @@ class Controller extends BaseController
         ]);
     }
 
-    public function detail($year,$month, $day, $title){
+    public function detail($year,$month, $day, $title): Factory|View|Application
+    {
         $posts = $this->getPosts();
         $post = array_merge(...$this->filterPostsByTitle($title));
         return view('detail' , [
@@ -91,7 +98,8 @@ class Controller extends BaseController
         ]);
     }
 
-    public function search(Request $request){
+    public function search(Request $request): View|Factory|Redirector|RedirectResponse|Application
+    {
         $posts = $this->getPosts();
         $searchValue = $request->input('search');
         $postsFound = $this->filterPostsByTitle($searchValue);
