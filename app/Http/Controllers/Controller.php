@@ -81,7 +81,7 @@ class Controller extends BaseController
     public function index (): Factory|View|Application
     {
         $posts = $this->getPosts();
-        return view('welcome' , [
+        return view('app' , [
             'posts' => $posts,
             'searchText' => ''
         ]);
